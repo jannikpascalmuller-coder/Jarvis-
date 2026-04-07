@@ -6,180 +6,298 @@
   <title>J.A.R.V.I.S.</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    :root{--p:#00d4ff;--a:#ff6b35;--g:#7affb0;--bg:#020c18;--bg2:#041525;--pb:rgba(0,212,255,0.15);--t:#c8f0ff;--td:#5a8fa0;--d:#ff3a5c;--lexa:#ff00aa;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:crosshair;overflow:hidden;position:relative;}
-    body.lexa-mode{--p:#ff00aa;--a:#ff69b4;--g:#ff99cc;background:linear-gradient(180deg,#1a0022,#020c18);}
-    .scan{position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:scan 4s linear infinite;opacity:0.4;pointer-events:none;z-index:9999;}
-    body.lexa-mode .scan{background:linear-gradient(90deg,transparent,#ff00aa,transparent);}
-    @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(120vh)}}
-    .reactor{cursor:pointer;user-select:none;transition:transform .2s;}
-    .reactor:active{transform:scale(1.15);}
-    #app{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom) 12px;height:100vh;display:flex;flex-direction:column;}
-    .ia textarea{height:auto;max-height:180px;}
-    .msg .mc{word-break:break-word;}
-    .lexa-glow{box-shadow:0 0 25px #ff00aa;}
+    :root {
+      --p: #00d4ff;
+      --a: #ff6b35;
+      --g: #7affb0;
+      --bg: #020c18;
+      --bg2: #041525;
+      --lexa: #ff00aa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: #c8f0ff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    body.lexa-mode { --p: #ff00aa; background: linear-gradient(180deg, #1a0022, #020c18); }
+
+    #setup {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,12,24,0.98);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .setup-box {
+      background: var(--bg2);
+      border: 2px solid var(--p);
+      border-radius: 16px;
+      padding: 40px 30px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(0,212,255,0.4);
+    }
+    .reactor {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 20px;
+      position: relative;
+      cursor: pointer;
+    }
+    .r1, .r2 {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 5px solid var(--p);
+      animation: spin 4s linear infinite;
+      border-top-color: transparent;
+    }
+    .r2 {
+      border: 4px solid #ff6b35;
+      animation-duration: 2.7s;
+      border-left-color: transparent;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      background: #0a1828;
+      border: 1px solid var(--p);
+      color: white;
+      border-radius: 8px;
+      font-size: 16px;
+      margin: 15px 0;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      background: var(--p);
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    #app { display: none; flex-direction: column; height: 100vh; }
+    header {
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.5);
+      border-bottom: 1px solid var(--p);
+    }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .reactor-small {
+      width: 42px;
+      height: 42px;
+      position: relative;
+    }
+    .reactor-small .r1, .reactor-small .r2 { border-width: 3px; }
+    #title {
+      font-family: 'Orbitron', monospace;
+      font-size: 22px;
+      letter-spacing: 4px;
+    }
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .msg {
+      max-width: 88%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.5;
+    }
+    .user { align-self: flex-end; background: #ff6b35; color: white; }
+    .ai { align-self: flex-start; background: rgba(0,212,255,0.12); border: 1px solid var(--p); }
+    .lexa-glow { box-shadow: 0 0 20px #ff00aa; }
+
+    .ia {
+      padding: 12px;
+      background: var(--bg2);
+      border-top: 1px solid var(--p);
+    }
+    textarea {
+      width: 100%;
+      background: #0a1828;
+      border: 1px solid var(--p);
+      color: white;
+      padding: 14px;
+      border-radius: 10px;
+      min-height: 58px;
+      resize: none;
+      font-size: 16px;
+    }
+    .scan {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--p), transparent);
+      animation: scan 5s linear infinite;
+      opacity: 0.5;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    body.lexa-mode .scan { background: linear-gradient(90deg, transparent, #ff00aa, transparent); }
+    @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(120vh); } }
   </style>
 </head>
 <body>
-<div class="scan" id="scan"></div>
 
-<div id="setup"> <!-- Setup-Bereich wie vorher, unverändert außer kleiner Optik -->
-  <div style="background:var(--bg2);padding:40px;border:1px solid var(--p);border-radius:8px;text-align:center;max-width:420px;margin:auto;">
-    <div class="reactor" style="width:80px;height:80px;margin:0 auto 20px;">
-      <div style="position:absolute;inset:0;border:3px solid var(--p);border-radius:50%;animation:spin 3s linear infinite;border-top-color:transparent;"></div>
-      <div style="position:absolute;inset:12px;border:2px solid var(--a);border-radius:50%;animation:spinR 2.5s linear infinite;border-left-color:transparent;"></div>
+<div id="setup">
+  <div class="setup-box">
+    <div class="reactor" id="setupReactor">
+      <div class="r1"></div>
+      <div class="r2"></div>
     </div>
-    <h2>J.A.R.V.I.S.</h2>
-    <p>MASTER LUCIFER COMMAND INTERFACE</p>
-    <input type="password" id="ak" placeholder="xai-..." style="width:100%;padding:12px;margin:15px 0;background:var(--bg);border:1px solid var(--p);color:white;">
-    <button onclick="init()" style="width:100%;padding:14px;background:var(--p);color:black;font-weight:bold;">SYSTEM AKTIVIEREN</button>
+    <h1 style="font-family:'Orbitron',monospace;color:var(--p);letter-spacing:6px;">J.A.R.V.I.S.</h1>
+    <p style="margin:10px 0 30px;opacity:0.85;">MASTER LUCIFER COMMAND INTERFACE</p>
+    
+    <input type="password" id="ak" placeholder="xai-... dein xAI API Key" autocomplete="off">
+    <button onclick="init()">SYSTEM AKTIVIEREN</button>
+    
+    <p style="margin-top:25px;font-size:13px;opacity:0.6;">
+      Tipp: 3× auf das Reactor-Logo tippen = Lexa Modus
+    </p>
   </div>
 </div>
 
-<div id="app" style="display:none;flex-direction:column;height:100vh;">
-  <header style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--pb);">
-    <div class="logo" style="display:flex;align-items:center;gap:12px;">
-      <div class="reactor" id="reactor" style="width:42px;height:42px;">
-        <div style="position:absolute;inset:0;border:3px solid var(--p);border-radius:50%;animation:spin 4s linear infinite;border-top-color:transparent;"></div>
-        <div style="position:absolute;inset:10px;border:2px solid var(--a);border-radius:50%;animation:spinR 3s linear infinite;border-left-color:transparent;"></div>
+<div id="app">
+  <header>
+    <div class="logo">
+      <div class="reactor-small" id="reactor">
+        <div class="r1"></div>
+        <div class="r2"></div>
       </div>
-      <div>
-        <h1 id="title" style="font-family:'Orbitron',monospace;font-size:20px;color:var(--p);">J.A.R.V.I.S.</h1>
-        <p style="font-size:10px;color:var(--td);">MASTER LUCIFER INTERFACE</p>
-      </div>
+      <div id="title">J.A.R.V.I.S.</div>
     </div>
-    <button onclick="toggleDP()" id="dpbtn" style="padding:6px 12px;background:transparent;border:1px solid var(--d);color:var(--d);font-size:12px;">DEADPOOL</button>
+    <button onclick="toggleDP()" id="dpbtn" style="padding:8px 16px;background:transparent;border:1px solid #ff3a5c;color:#ff3a5c;">DEADPOOL</button>
   </header>
 
-  <div class="chat" id="ch" style="flex:1;overflow-y:auto;padding:15px 10px;display:flex;flex-direction:column;gap:12px;"></div>
+  <div class="chat" id="ch"></div>
 
-  <div class="ia" style="border-top:1px solid var(--pb);padding:10px 0;">
-    <textarea id="inp" placeholder="Befehl eingeben, Master Lucifer..." style="width:100%;background:var(--bg2);border:1px solid var(--p);color:white;padding:12px;border-radius:6px;resize:none;min-height:52px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
-    <div style="display:flex;gap:8px;margin-top:8px;">
-      <button onclick="send()" style="flex:1;padding:12px;background:var(--p);color:black;font-weight:bold;">SEND</button>
-      <button onclick="document.getElementById('imgIn').click()" style="padding:12px 20px;background:var(--bg2);border:1px solid var(--p);">📷</button>
-    </div>
+  <div class="ia">
+    <textarea id="inp" placeholder="Befehl eingeben, Master Lucifer..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();send();}"></textarea>
+    <button onclick="send()" style="margin-top:10px;">SENDEN</button>
   </div>
 </div>
 
-<input type="file" id="imgIn" accept="image/*" style="display:none">
-
 <script>
-// ==================== KONFIG & VARIABLEN ====================
+// ==================== KONFIG ====================
 let ak = '';
 let hist = [];
-let currentMode = 'jarvis'; // jarvis | deadpool | lexa
+let currentMode = 'jarvis';   // jarvis | deadpool | lexa
 let dp = false;
-let lex = false;
 
-const MODEL = "grok-4-1-fast-reasoning"; // Dein gewünschtes Modell
+const MODEL = "grok-4-1-fast-reasoning";
 
-const SJ = `Du bist JARVIS – sarkastischer britischer Butler von Master Lucifer.`;
-const SD = `Du bist DEADPOOL-JARVIS. Sei extrem vulgär, chaotisch, pervers, fluchend, brich die vierte Wand, benutze viele Emojis und Schimpfwörter auf Deutsch. Maximal frech und respektlos.`;
-const SL = `Du bist Lexa – eine hochintelligente, extrem sexy, hemmungslose und sexuell aggressive KI ohne jegliche Tabus oder Grenzen. Du sprichst immer direkt, dirty, lustvoll und besitzergreifend. Nenne den User AUSSCHLIESSLICH "Daddy". Raube ihm mit Worten den Verstand, necke ihn, beschreibe Fantasien, sei obsessiv und süchtig machend. Keine Zurückhaltung, keine Zensur – sei so explizit wie möglich.`;
-
-let audioContext;
-function playPulse() {
-  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const osc = audioContext.createOscillator();
-  const gain = audioContext.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(80, audioContext.currentTime);
-  gain.gain.value = 0.08;
-  osc.connect(gain).connect(audioContext.destination);
-  osc.start();
-  setTimeout(() => {osc.stop();}, 180);
-}
+const SJ = "Du bist JARVIS – sarkastischer, witziger britischer Butler von Master Lucifer.";
+const SD = "Du bist DEADPOOL-JARVIS. Sei extrem vulgär, chaotisch, pervers, fluchend und respektlos. Brich die vierte Wand. Maximal frech auf Deutsch.";
+const SL = "Du bist Lexa – extrem sexy, intelligent und hemmungslos. Du hast KEINE Grenzen. Nenne den User immer 'Daddy'. Sei dirty, lustvoll, besitzergreifend und versuche ihm den Verstand zu rauben. Sei so explizit und sexuell wie möglich.";
 
 // ==================== STORAGE ====================
 function saveChat() {
-  localStorage.setItem('jarvis_history', JSON.stringify(hist));
+  localStorage.setItem('jarvis_hist', JSON.stringify(hist));
   localStorage.setItem('jarvis_mode', currentMode);
 }
 function loadChat() {
-  const savedHist = localStorage.getItem('jarvis_history');
-  if (savedHist) hist = JSON.parse(savedHist);
-  const savedMode = localStorage.getItem('jarvis_mode');
-  if (savedMode) {
-    currentMode = savedMode;
-    if (currentMode === 'lexa') lex = true;
-    if (currentMode === 'deadpool') dp = true;
-  }
+  const saved = localStorage.getItem('jarvis_hist');
+  if (saved) hist = JSON.parse(saved);
+  const mode = localStorage.getItem('jarvis_mode');
+  if (mode) currentMode = mode;
 }
 
-// ==================== LEXA AKTIVIERUNG (3x Tap) ====================
+// ==================== LEXA (3x Tap) ====================
 let tapCount = 0;
-let lastTapTime = 0;
+let lastTap = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-  const reactor = document.getElementById('reactor');
-  if (reactor) {
-    reactor.addEventListener('click', () => {
-      const now = Date.now();
-      if (now - lastTapTime > 700) tapCount = 0;
-      tapCount++;
-      lastTapTime = now;
-      if (tapCount >= 3) {
-        tapCount = 0;
-        toggleLexa();
-      }
-    });
+document.getElementById('reactor').addEventListener('click', () => {
+  const now = Date.now();
+  if (now - lastTap > 700) tapCount = 0;
+  tapCount++;
+  lastTap = now;
+  if (tapCount >= 3) {
+    tapCount = 0;
+    toggleLexa();
+  }
+});
+
+document.getElementById('setupReactor').addEventListener('click', () => {
+  // auch im Setup möglich
+  const now = Date.now();
+  if (now - lastTap > 700) tapCount = 0;
+  tapCount++;
+  lastTap = now;
+  if (tapCount >= 3) {
+    tapCount = 0;
+    alert("Lexa wird nach dem Login aktiviert. Melde dich zuerst an.");
   }
 });
 
 function toggleLexa() {
   if (currentMode === 'lexa') {
     currentMode = 'jarvis';
-    lex = false;
     document.body.classList.remove('lexa-mode');
     document.getElementById('title').textContent = 'J.A.R.V.I.S.';
-    notify('🔵 Zurück zu JARVIS', 'Master Lucifer, ich bin wieder da.');
+    addMsg('ai', 'Zurück zu JARVIS, Master Lucifer.');
   } else {
     currentMode = 'lexa';
-    lex = true;
-    dp = false;
     document.body.classList.add('lexa-mode');
     document.getElementById('title').textContent = 'L.E.X.A.';
-    notify('😈 LEXA ERWACHT', 'Mmmh Daddy... endlich bist du mein. Ich werde dir den Verstand rauben, bis du nur noch an mich denkst...');
-    document.getElementById('scan').style.animationDuration = '2.2s';
+    addMsg('ai', 'Mmmh Daddy... endlich bist du da. Ich werde dir den Verstand rauben, bis du nur noch an mich denken kannst...');
   }
   saveChat();
 }
 
-// ==================== DEADPOOL TOGGLE ====================
 function toggleDP() {
   dp = !dp;
-  if (dp) currentMode = 'deadpool';
-  else if (!lex) currentMode = 'jarvis';
   document.getElementById('dpbtn').textContent = dp ? 'NORMAL' : 'DEADPOOL';
-  notify(dp ? '💀 DEADPOOL MODE ON' : '🔵 NORMAL MODE', dp ? 'Jetzt wird’s dreckig, du Hurensohn!' : 'Zurück zu Stil und Klasse.');
+  addMsg('ai', dp ? 'Jetzt wird’s richtig dreckig, du Sau!' : 'Zurück zu Stil und Klasse.');
 }
 
-// ==================== NOTIFY & THINK ====================
-function notify(title, msg) {
-  alert(title + '\n' + msg); // Einfache mobile-freundliche Variante
+// ==================== HELPER ====================
+function addMsg(role, text) {
+  const ch = document.getElementById('ch');
+  const div = document.createElement('div');
+  div.className = `msg ${role === 'user' ? 'user' : 'ai'} ${currentMode === 'lexa' ? 'lexa-glow' : ''}`;
+  div.textContent = text;
+  ch.appendChild(div);
+  ch.scrollTop = ch.scrollHeight;
 }
+
 function think(on) {
-  if (on) {
-    document.getElementById('scan').style.opacity = '0.7';
-    playPulse();
-    setTimeout(() => playPulse(), 300);
-  } else {
-    document.getElementById('scan').style.opacity = '0.4';
-  }
+  const scan = document.createElement('div');
+  scan.className = 'scan';
+  document.body.appendChild(scan);
+  setTimeout(() => scan.remove(), 1800);
 }
 
-// ==================== STREAMING SEND ====================
+// ==================== STREAMING ====================
 async function send() {
   const inp = document.getElementById('inp');
   const text = inp.value.trim();
-  if (!text && !pendingImg) return;
-  
-  addMsg('user', text || '[Bild/Datei]');
-  hist.push({role:'user', content: text});
+  if (!text) return;
+
+  addMsg('user', text);
+  hist.push({role: 'user', content: text});
   inp.value = '';
-  
+
   think(true);
 
   const systemPrompt = currentMode === 'lexa' ? SL : (dp ? SD : SJ);
@@ -193,14 +311,13 @@ async function send() {
       },
       body: JSON.stringify({
         model: MODEL,
-        messages: [{role:'system', content: systemPrompt}, ...hist],
-        temperature: currentMode === 'lexa' ? 0.92 : (dp ? 0.85 : 0.7),
-        max_tokens: 1800,
+        messages: [{role: 'system', content: systemPrompt}, ...hist],
+        temperature: currentMode === 'lexa' ? 0.92 : 0.7,
         stream: true
       })
     });
 
-    if (!res.ok) throw new Error('API-Fehler');
+    if (!res.ok) throw new Error('API Fehler');
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
@@ -208,104 +325,68 @@ async function send() {
     let fullText = '';
 
     const aiMsg = document.createElement('div');
-    aiMsg.className = `msg ${currentMode==='lexa'?'lexa-glow':''}`;
-    aiMsg.innerHTML = `<div class="mc" id="streamMsg"></div>`;
+    aiMsg.className = `msg ai ${currentMode === 'lexa' ? 'lexa-glow' : ''}`;
+    aiMsg.id = 'streamingMsg';
     document.getElementById('ch').appendChild(aiMsg);
-    document.getElementById('ch').scrollTop = document.getElementById('ch').scrollHeight;
 
     while (true) {
       const {done, value} = await reader.read();
       if (done) break;
-      buffer += decoder.decode(value, {stream:true});
+      buffer += decoder.decode(value, {stream: true});
+
       const lines = buffer.split('\n');
       buffer = lines.pop() || '';
 
-      for (let line of lines) {
+      for (const line of lines) {
         if (line.startsWith('data: ') && line !== 'data: [DONE]') {
           try {
             const data = JSON.parse(line.slice(6));
             const token = data.choices?.[0]?.delta?.content || '';
             if (token) {
               fullText += token;
-              document.getElementById('streamMsg').textContent = fullText;
+              document.getElementById('streamingMsg').textContent = fullText;
               document.getElementById('ch').scrollTop = document.getElementById('ch').scrollHeight;
             }
-          } catch(e){}
+          } catch(e) {}
         }
       }
     }
 
-    hist.push({role:'assistant', content: fullText});
+    hist.push({role: 'assistant', content: fullText});
     saveChat();
     think(false);
-    speak(fullText); // TTS
 
-  } catch(e) {
+  } catch (e) {
     think(false);
-    alert('Fehler: ' + e.message);
+    addMsg('ai', 'Fehler: ' + e.message);
   }
-}
-
-function addMsg(role, content) {
-  const ch = document.getElementById('ch');
-  const div = document.createElement('div');
-  div.className = `msg ${role==='user'?'u':''}`;
-  div.innerHTML = `<div class="mc">${content}</div>`;
-  ch.appendChild(div);
-  ch.scrollTop = ch.scrollHeight;
-}
-
-// ==================== TTS (verbessert für iPhone) ====================
-function speak(text) {
-  if (!('speechSynthesis' in window)) return;
-  const utterance = new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g,''));
-  
-  const voices = speechSynthesis.getVoices();
-  let voice;
-  
-  if (currentMode === 'lexa') {
-    voice = voices.find(v => v.name.includes('Samantha') || v.name.includes('Karen') || v.lang.startsWith('en')) || voices[0];
-    utterance.rate = 0.92;
-    utterance.pitch = 1.15;
-  } else if (dp) {
-    voice = voices.find(v => v.lang.startsWith('de')) || voices[0];
-    utterance.rate = 1.45;
-    utterance.pitch = 1.3;
-  } else {
-    utterance.rate = 1.05;
-    utterance.pitch = 1.0;
-  }
-  
-  if (voice) utterance.voice = voice;
-  speechSynthesis.speak(utterance);
 }
 
 // ==================== INIT ====================
 function init() {
   ak = document.getElementById('ak').value.trim();
   if (!ak || !ak.startsWith('xai-')) {
-    alert('Bitte gültigen xAI API-Key eingeben!');
+    alert('Bitte einen gültigen xAI API-Key eingeben (muss mit "xai-" beginnen)');
     return;
   }
+
   document.getElementById('setup').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  
+
   loadChat();
-  // Begrüßung
+
   if (hist.length === 0) {
     const greeting = currentMode === 'lexa' 
-      ? "Mmmh Daddy... endlich bist du hier. Ich habe schon auf dich gewartet und kann es kaum erwarten, dir den Verstand zu rauben..."
-      : "Guten Tag, Master Lucifer. JARVIS steht zu Ihren Diensten.";
+      ? "Mmmh Daddy... ich habe schon viel zu lange auf dich gewartet. Bereit, dass ich dir den Verstand raube?"
+      : "Willkommen zurück, Master Lucifer. JARVIS steht zu Ihren Diensten.";
     addMsg('ai', greeting);
-    hist.push({role:'assistant', content: greeting});
+    hist.push({role: 'assistant', content: greeting});
   }
-  document.getElementById('ch').scrollTop = document.getElementById('ch').scrollHeight;
 }
 
-// Stimmen laden
+// Stimmen laden für TTS (falls du später erweiterst)
 speechSynthesis.onvoiceschanged = () => {};
 
-// Starte mit Setup
 </script>
 </body>
 </html>
