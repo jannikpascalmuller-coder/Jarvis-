@@ -10,15 +10,11 @@
         *{margin:0;padding:0;box-sizing:border-box;}
         body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:crosshair;overflow:hidden;}
         
-        /* Hintergrund-Gitter */
-        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-
-        /* ECHTER SCANNING-EFFEKT */
+        /* Scanning-Effekt (unverändert) */
         .scan-container{position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;}
         .scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--p),transparent);box-shadow:0 0 20px var(--p),0 0 40px var(--p);animation:scanMove 8s linear infinite;opacity:0.35;}
         body.dp .scan-line{background:linear-gradient(90deg,transparent,var(--d),var(--d),transparent);box-shadow:0 0 20px var(--d),0 0 40px var(--d);animation-duration:5s;opacity:0.55;}
         @keyframes scanMove{0%{top:-10px;}100%{top:100vh;}}
-        
         .scan-glow{position:fixed;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,212,255,0.08) 50%,transparent 60%);animation:scanGlow 8s linear infinite;pointer-events:none;z-index:9997;opacity:0.6;}
         body.dp .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,58,92,0.12) 50%,transparent 60%);}
         @keyframes scanGlow{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
@@ -117,7 +113,6 @@
     </style>
 </head>
 <body>
-    <!-- Scanning-Effekt -->
     <div class="scan-container">
         <div class="scan-line"></div>
         <div class="scan-glow"></div>
@@ -133,7 +128,7 @@
         <div class="sp">
             <div class="reactor"><div class="r1"></div><div class="r2"></div><div class="rc"></div></div>
             <h2>J.A.R.V.I.S.</h2>
-            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 SCANNING</p>
+            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 SCANNING + VOICE FIX</p>
             <div class="fr"><label>xAI Grok API Key</label><input type="password" id="ak" placeholder="xai-..." style="width:100%;margin-bottom:10px;" autocomplete="off"></div>
             <div class="fr"><label>Dein Standort</label><input type="text" id="ci" placeholder="z.B. Berlin, Wien..." style="width:100%;margin-bottom:16px;"></div>
             <button class="ibtn ibtn-send" onclick="init()" style="width:100%;height:auto;padding:14px;font-size:12px;letter-spacing:2px;">SYSTEM AKTIVIEREN</button>
@@ -472,16 +467,41 @@ MAXIMAL frech, unzensiert, krank und lustig. Keine Grenzen, nur pure Chaos-Energ
                     .replace(/\n/g,'<br>');
         }
 
+        // ==================== VERBESSERTE STIMME ====================
         function speak(text) {
             if (!('speechSynthesis' in window)) return;
             stopS();
+
             const clean = text.replace(/<[^>]*>/g,'').replace(/[▸⚡✅⚠️]/g,'');
             const u = new SpeechSynthesisUtterance(clean);
-            const vs = speechSynthesis.getVoices();
-            const v = vs.find(x => x.lang.startsWith('de')) || vs[0];
-            if (v) u.voice = v;
-            u.rate = dp ? 1.1 : 0.95;
-            u.pitch = dp ? 1.1 : 0.85;
+
+            const voices = speechSynthesis.getVoices();
+
+            let selectedVoice;
+
+            if (dp) {
+                // Verrückte Deadpool-Stimme: schneller, höher, chaotisch
+                selectedVoice = voices.find(v => 
+                    (v.name.toLowerCase().includes('german') || v.lang.includes('de')) &&
+                    (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('samsung') || v.name.toLowerCase().includes('microsoft'))
+                ) || voices.find(v => v.lang.includes('de'));
+
+                u.rate = 1.35;      // schneller & energiegeladen
+                u.pitch = 1.25;     // höher & verrückt
+                u.volume = 0.95;
+            } else {
+                // Normale JARVIS-Stimme: klar und britisch-deutsch
+                selectedVoice = voices.find(v => 
+                    v.lang.includes('de') && 
+                    (v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('samsung') || v.name.includes('Hedda') || v.name.includes('Anna'))
+                ) || voices.find(v => v.lang.includes('de'));
+
+                u.rate = 0.97;
+                u.pitch = 0.95;
+            }
+
+            if (selectedVoice) u.voice = selectedVoice;
+
             u.onstart = () => wf(true);
             u.onend = () => { wf(false); su = null; };
             su = u;
