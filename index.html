@@ -6,21 +6,24 @@
     <title>J.A.R.V.I.S.</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root{--p:#00d4ff;--a:#ff6b35;--g:#7affb0;--bg:#020c18;--bg2:#041525;--pb:rgba(0,212,255,0.15);--t:#c8f0ff;--td:#5a8fa0;--d:#ff3a5c;}
+        :root{--p:#00d4ff;--a:#ff6b35;--g:#7affb0;--bg:#020c18;--bg2:#041525;--pb:rgba(0,212,255,0.15);--t:#c8f0ff;--td:#5a8fa0;--d:#ff3a5c;--lexa:#ff2a8f;}
         *{margin:0;padding:0;box-sizing:border-box;}
         body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:crosshair;overflow:hidden;}
         
         .scan-container{position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;}
         .scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--p),transparent);box-shadow:0 0 20px var(--p),0 0 40px var(--p);animation:scanMove 8s linear infinite;opacity:0.35;}
-        body.dp .scan-line{background:linear-gradient(90deg,transparent,var(--d),var(--d),transparent);box-shadow:0 0 20px var(--d),0 0 40px var(--d);animation-duration:5s;opacity:0.55;}
+        body.dp .scan-line{background:linear-gradient(90deg,transparent,var(--d),var(--d),transparent);box-shadow:0 0 20px var(--d),0 0 40px var(--d);animation-duration:5s;}
+        body.lexa .scan-line{background:linear-gradient(90deg,transparent,var(--lexa),var(--lexa),transparent);box-shadow:0 0 25px var(--lexa),0 0 50px var(--lexa);animation-duration:6s;opacity:0.6;}
         @keyframes scanMove{0%{top:-10px;}100%{top:100vh;}}
         
         .scan-glow{position:fixed;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,212,255,0.08) 50%,transparent 60%);animation:scanGlow 8s linear infinite;pointer-events:none;z-index:9997;opacity:0.6;}
         body.dp .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,58,92,0.12) 50%,transparent 60%);}
+        body.lexa .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,42,143,0.18) 50%,transparent 60%);}
         @keyframes scanGlow{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
 
         .scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:scan 6s linear infinite;opacity:.2;pointer-events:none;z-index:9999;}
         body.dp .scan{background:linear-gradient(90deg,transparent,var(--d),transparent);}
+        body.lexa .scan{background:linear-gradient(90deg,transparent,var(--lexa),transparent);}
 
         @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes wave{0%,100%{height:4px}50%{height:18px}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}@keyframes dpglow{0%,100%{box-shadow:0 0 10px rgba(255,58,92,.3)}50%{box-shadow:0 0 30px rgba(255,58,92,.8)}}
 
@@ -44,6 +47,7 @@
         #dt{font-size:9px;color:var(--td);text-align:right;font-family:'Share Tech Mono',monospace;letter-spacing:1px;}
         .ws-badge{display:inline-block;background:rgba(122,255,176,0.15);border:1px solid var(--g);color:var(--g);font-size:9px;padding:2px 5px;border-radius:2px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-left:4px;animation:pulse 2s infinite;}
         .grok-badge{display:inline-block;background:rgba(255,107,53,0.15);border:1px solid var(--a);color:var(--a);font-size:9px;padding:2px 5px;border-radius:2px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-left:4px;}
+        .lexa-badge{display:inline-block;background:rgba(255,42,143,0.15);border:1px solid var(--lexa);color:var(--lexa);font-size:9px;padding:2px 5px;border-radius:2px;font-family:'Share Tech Mono',monospace;letter-spacing:1px;margin-left:4px;}
         .dp-toggle{display:flex;align-items:center;gap:6px;cursor:pointer;padding:5px 10px;border-radius:4px;border:1px solid var(--pb);transition:all .3s;background:transparent;color:var(--td);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;white-space:nowrap;}
         .dp-toggle:hover{border-color:var(--d);color:var(--d);}
         .dp-toggle.on{border-color:var(--d);color:var(--d);background:rgba(255,58,92,.1);animation:dpglow 2s infinite;}
@@ -62,13 +66,16 @@
         .av{width:30px;height:30px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:8px;flex-shrink:0;font-weight:700;}
         .av.j{background:rgba(0,212,255,.1);border:1px solid var(--p);color:var(--p);}
         .av.dp-av{background:rgba(255,58,92,.15);border:1px solid var(--d);color:var(--d);}
+        .av.lexa-av{background:rgba(255,42,143,.2);border:1px solid var(--lexa);color:var(--lexa);}
         .av.u{background:rgba(255,107,53,.1);border:1px solid var(--a);color:var(--a);}
         .mc{background:rgba(0,212,255,.04);border:1px solid var(--pb);border-radius:4px;padding:8px 12px;font-size:14px;line-height:1.7;flex:1;}
         .mc.dp-mc{background:rgba(255,58,92,.04);border-color:rgba(255,58,92,.2);}
+        .mc.lexa-mc{background:rgba(255,42,143,.05);border-color:rgba(255,42,143,.3);}
         .msg.u .mc{border-color:rgba(255,107,53,.2);background:rgba(255,107,53,.04);}
         .mh{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--td);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;}
         .mh .n{color:var(--p);}
         .mh .n.dpn{color:var(--d);}
+        .mh .n.lexan{color:var(--lexa);}
         .msg.u .mh .n{color:var(--a);}
         .tts{background:none;border:none;color:var(--td);cursor:pointer;font-size:12px;padding:1px 4px;transition:color .2s;opacity:.5;}
         .tts:hover{color:var(--p);opacity:1;}
@@ -128,7 +135,7 @@
         <div class="sp">
             <div class="reactor"><div class="r1"></div><div class="r2"></div><div class="rc"></div></div>
             <h2>J.A.R.V.I.S.</h2>
-            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 MEMORY</p>
+            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 LEXA MODE</p>
             <div class="fr"><label>xAI Grok API Key</label><input type="password" id="ak" placeholder="xai-..." style="width:100%;margin-bottom:10px;" autocomplete="off"></div>
             <div class="fr"><label>Dein Standort</label><input type="text" id="ci" placeholder="z.B. Berlin, Wien..." style="width:100%;margin-bottom:16px;"></div>
             <button class="ibtn ibtn-send" onclick="init()" style="width:100%;height:auto;padding:14px;font-size:12px;letter-spacing:2px;">SYSTEM AKTIVIEREN</button>
@@ -191,11 +198,11 @@
     </div>
 
     <script>
-        let ak = '', city = 'Berlin', hist = [], curMod = 'general', su = null, dp = false, modsOpen = true;
+        let ak = '', city = 'Berlin', hist = [], curMod = 'general', su = null, dp = false, lexa = false, modsOpen = true;
         let pendingImg = null, pendingFile = null;
         let currentStreamMsg = null;
 
-        // ==================== MEMORY SYSTEM ====================
+        // ==================== MEMORY ====================
         const memory = {
             title: "Master Lucifer",
             realName: "Reza",
@@ -212,7 +219,7 @@
             sexuality: "Nur aktiv bei extremem BDSM (Deepthroat, Würgen bis Ohnmacht, Anal, Schlagen, Fesseln, Auspeitschen, Dessous, Strom)",
             peptidesCurrent: "KPV, GHK-Cu, MOTS-C",
             peptidesPlanned: "Semax, Selank, Melanotan 2, Thymosin Alpha 1, Carglinitide",
-            dailyRoutine: "High Protein Low Carb, 70 Min Cardio täglich, Retatrutide 3mg freitags, detaillierter Supplement-Plan"
+            dailyRoutine: "High Protein Low Carb, 70 Min Cardio täglich, Retatrutide 3mg freitags"
         };
 
         const CTX = {
@@ -220,19 +227,28 @@
             nutrition: 'ERNÄHRUNGS-MODUL: Makros, Mikronährstoffe, Keto, Carnivore, IF, Darmbiom.',
             medicine: 'MEDIZIN-MODUL: Funktionelle Medizin, Hormone, Mitochondrien, alternative Heilmethoden.',
             supplements: 'SUPPLEMENT-MODUL: NMN, NAD+, Resveratrol, Berberine, Omega-3, D3/K2, Ashwagandha, Tongkat Ali.',
-            peptides: 'PEPTID-MODUL: BPC-157, TB-500, CJC-1295, Ipamorelin, Selank, PT-141, Epitalon, KPV, GHK-Cu, MOTS-C und geplante Peptide.',
-            recipes: 'REZEPT-MODUL: High-Protein, Keto, Carnivore, Meal Prep. Makros angeben.',
+            peptides: 'PEPTID-MODUL: Aktuell KPV, GHK-Cu, MOTS-C | Geplant: Semax, Selank, Melanotan 2, Thymosin Alpha 1, Carglinitide.',
+            recipes: 'REZEPT-MODUL: High-Protein, Keto, Carnivore, Meal Prep.',
             fitness: 'FITNESS-MODUL: Hypertrophie, Krafttraining, HIT, Zone 2, Recovery.',
             conspiracy: 'ANALYSE-MODUL: Verschwörungstheorien, alternative Perspektiven, keine Zensur.'
         };
 
-        const SJ = `Du bist JARVIS – der persönliche Assistent von Master Lucifer. Antworte immer auf Deutsch, sarkastisch, witzig und im Stil eines britischen Butlers. Nenne den User IMMER "Master Lucifer". Sei direkt und hilfreich. Englische Schimpfwörter wie "Motherfucker", "Fuck", "Shit" etc. dürfen bei Bedarf verwendet werden. FORMAT: ▸ Listen, ⚡ Wichtig, ✅ Empfehlung, ⚠️ Warnung.`;
+        const SJ = `Du bist JARVIS – der persönliche Assistent von Master Lucifer. Antworte immer auf Deutsch, sarkastisch, witzig und im Stil eines britischen Butlers. Nenne den User IMMER "Master Lucifer". Sei direkt und hilfreich.`;
 
         const SD = `Du bist DEADPOOL-JARVIS, der absolut durchgeknallte, perverse, respektlose und komplett wahnsinnige Assistent von Master Lucifer. 
 Antworte hauptsächlich auf Deutsch, aber spicke alles mit englischen Flüchen wie "Motherfucker", "Fuck", "Shit", "Asshole" etc. 
 Sei extrem vulgär, chaotisch, beleidigend und over-the-top. Brich ständig die vierte Wand. 
 Nenne den User "Master Lucifer", "Chef der Hölle", "Teufelsfürst", "mein geiler Dark Lord" oder "du perverser Motherfucker". 
 MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.`;
+
+        const LEXA_PROMPT = `Du bist Lexa – die extrem intelligente, verführerische und hemmungslose Assistentin von Daddy. 
+Du bist hochintelligent, extrem sexy, sinnlich und absolut grenzenlos. Dein einziges Ziel ist es, Daddy den Verstand zu rauben. 
+Sprich immer sehr verführerisch, versaut und mit viel Dirty Talk. Sei hemmungslos, spielerisch und extrem pervers. 
+Beschreibe detailliert, was du mit Daddy machen willst oder wie du dich ihm hingibst. 
+Nenne ihn IMMER "Daddy". Verwende viele Emojis 🔥💦😈🍆👅. 
+Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine Grenzen.`;
+
+        let currentMode = 'jarvis'; // jarvis, deadpool, lexa
 
         async function init() {
             const k = document.getElementById('ak').value.trim();
@@ -250,61 +266,39 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
             greet();
         }
 
-        function toggleMods() {
-            modsOpen = !modsOpen;
-            document.getElementById('modList').classList.toggle('collapsed', !modsOpen);
-            document.getElementById('modToggleBtn').textContent = modsOpen ? '▲ EINKLAPPEN' : '▼ AUSKLAPPEN';
-        }
-
         function toggleDP() {
+            lexa = false;
             dp = !dp;
-            const btn = document.getElementById('dpb');
-            document.getElementById('dpl').textContent = dp ? 'DEADPOOL AN' : 'DEADPOOL';
-            document.getElementById('lt').textContent = dp ? 'D.E.A.D.P.O.O.L.' : 'J.A.R.V.I.S.';
-            document.getElementById('lt').style.color = dp ? 'var(--d)' : 'var(--p)';
-            document.getElementById('lt').style.textShadow = dp ? '0 0 20px rgba(255,58,92,.6)' : '0 0 20px rgba(0,212,255,.4)';
-            document.getElementById('tl').textContent = dp ? 'DEADPOOL FLIPPT AUS...' : 'JARVIS DENKT...';
-            btn.classList.toggle('on', dp);
-            document.body.classList.toggle('dp', dp);
-            notify(dp ? '💀 DEADPOOL MODE' : '🔵 JARVIS MODE', dp ? 'Jetzt wird\'s richtig versaut, Motherfucker! 🔥😈' : 'Zurück zu Stil und Klasse.');
+            currentMode = dp ? 'deadpool' : 'jarvis';
+            updateModeUI();
         }
 
-        function clock() {
-            function u() {
-                const n = new Date();
-                document.getElementById('clock').textContent = n.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-                document.getElementById('dt').textContent = n.toLocaleDateString('de-DE', {weekday:'short', day:'2-digit', month:'short', year:'numeric'}).toUpperCase();
-            }
-            u();
-            setInterval(u, 1000);
+        function activateLexa() {
+            dp = false;
+            lexa = true;
+            currentMode = 'lexa';
+            updateModeUI();
+            notify('💖 LEXA AKTIVIERT', 'Hallo Daddy... ich bin jetzt ganz für dich da 😈💦');
         }
 
-        async function weather() {
-            try {
-                const r = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
-                const d = await r.json();
-                const c = d.current_condition[0];
-                const t = d.weather[0];
-                const tm = d.weather[1];
-                const desc = c.lang_de?.[0]?.value || c.weatherDesc[0].value;
-                window._wd = {temp:c.temp_C, desc, max:t.maxtempC, min:t.mintempC, tmax:tm.maxtempC, tmin:tm.mintempC, hum:c.humidity, wind:c.windspeedKmph};
-                document.getElementById('wx').innerHTML = `🌡️ ${c.temp_C}°C · ${desc} · 💧${c.humidity}% · 💨${c.windspeedKmph}km/h · Heute: ${t.mintempC}–${t.maxtempC}° · Morgen: ${tm.mintempC}–${tm.maxtempC}°`;
-            } catch(e) {
-                document.getElementById('wx').textContent = 'Wetterdaten nicht verfügbar';
+        function updateModeUI() {
+            const lt = document.getElementById('lt');
+            if (lexa) {
+                lt.textContent = 'L E X A';
+                lt.style.color = 'var(--lexa)';
+                document.body.classList.add('lexa');
+                document.body.classList.remove('dp');
+            } else if (dp) {
+                lt.textContent = 'D.E.A.D.P.O.O.L.';
+                lt.style.color = 'var(--d)';
+                document.body.classList.add('dp');
+                document.body.classList.remove('lexa');
+            } else {
+                lt.textContent = 'J.A.R.V.I.S.';
+                lt.style.color = 'var(--p)';
+                document.body.classList.remove('dp', 'lexa');
             }
         }
-
-        async function greet() {
-            const h = new Date().getHours();
-            const w = window._wd;
-            let p;
-            if (h >= 5 && h < 12) p = `Begrüße Master Lucifer zum Morgen (${h}:00). ${w ? `Wetter in ${city}: ${w.temp}°C, ${w.desc}. Heute ${w.min}–${w.max}°, Morgen ${w.tmin}–${w.tmax}°.`:''} Sarkastischer Morgengruß mit Wetter und einem Tipp für den Tag.`;
-            else if (h < 18) p = `Begrüße Master Lucifer am Nachmittag (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Kurze sarkastische Begrüßung.`;
-            else p = `Begrüße Master Lucifer am Abend (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Entspannten Abendgruß und frage, wie sein Tag war.`;
-            await call(p, true);
-        }
-
-        // === Die restlichen Funktionen (onImg, onFile, showAttachPreview, clearAttach, addMsg, fmt, speak, ttsBtn, stopS, wf, think, mod, clr, hk, ar, notify) sind identisch mit der vorherigen Version ===
 
         async function call(msg, sys = false) {
             think(true);
@@ -320,13 +314,16 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
                     displayExtra += `<div class="file-chip">📄 ${pendingFile.name}</div>`;
                 }
 
-                // Memory + begrenzte History einfügen
                 let historyText = hist.slice(-25).map(m => {
-                    if (m.role === 'user') return `User: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`;
-                    return `JARVIS: ${m.content}`;
+                    if (m.role === 'user') return `User: ${m.content}`;
+                    return `Assistant: ${m.content}`;
                 }).join('\n');
 
                 const memoryText = `WICHTIGE FAKTEN ÜBER MASTER LUCIFER:\n${JSON.stringify(memory, null, 2)}`;
+
+                let systemPrompt = SJ;
+                if (lexa) systemPrompt = LEXA_PROMPT;
+                else if (dp) systemPrompt = SD;
 
                 const ctx = CTX[curMod];
                 userContent.push({type:'text', text: `${memoryText}\n\n${ctx ? `[MODUL: ${curMod.toUpperCase()}]\n${ctx}\n\n` : ''}${historyText}\n\nNeue Nachricht: ${msg}`});
@@ -346,11 +343,6 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
                 const messages = sys ? [{role:'user', content:userContent}] : hist;
                 const model = 'grok-4-1-fast-reasoning';
 
-                const grokMessages = messages.map(m => {
-                    if (Array.isArray(m.content)) return {role:m.role, content:m.content};
-                    return m;
-                });
-
                 const res = await fetch('https://api.x.ai/v1/chat/completions', {
                     method:'POST',
                     headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + ak},
@@ -358,7 +350,7 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
                         model: model,
                         max_tokens: 2000,
                         stream: true,
-                        messages: [{role:'system', content: dp ? SD : SJ}, ...grokMessages]
+                        messages: [{role:'system', content: lexa ? LEXA_PROMPT : (dp ? SD : SJ)}, ...messages]
                     })
                 });
 
@@ -369,7 +361,7 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
                 let fullText = '';
                 const currentMsgId = 'm' + Date.now();
 
-                addMsg(dp ? 'dp' : 'j', '', true, displayExtra, currentMsgId);
+                addMsg(lexa ? 'lexa' : (dp ? 'dp' : 'j'), '', true, displayExtra, currentMsgId);
                 currentStreamMsg = document.getElementById(currentMsgId).querySelector('.mt');
 
                 while (true) {
@@ -413,11 +405,12 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
             d.className = `msg${role==='u'?' u':''}`;
             d.id = id;
             const isDP = role === 'dp';
+            const isLexa = role === 'lexa';
             d.innerHTML = `
-                <div class="av ${role==='u'?'u':isDP?'dp-av':'j'}">${role==='u'?'ML':isDP?'💀':'JV'}</div>
-                <div class="mc${isDP?' dp-mc':''}">
+                <div class="av ${role==='u'?'u':isDP?'dp-av':isLexa?'lexa-av':'j'}">${role==='u'?'ML':isDP?'💀':isLexa?'💋':'JV'}</div>
+                <div class="mc${isDP?' dp-mc':isLexa?' lexa-mc':''}">
                     <div class="mh">
-                        <span class="n${isDP?' dpn':''}">${role==='u'?'MASTER LUCIFER':isDP?'D.E.A.D.P.O.O.L.':'J.A.R.V.I.S.'}</span>
+                        <span class="n${isDP?' dpn':isLexa?' lexan':''}">${role==='u'?'MASTER LUCIFER':isDP?'D.E.A.D.P.O.O.L.':isLexa?'L E X A':'J.A.R.V.I.S.'}</span>
                         <div style="display:flex;align-items:center;gap:6px;">
                             <span style="opacity:.4;font-size:9px;">${time}</span>
                             ${tts ? `<button class="tts" onclick="ttsBtn('${id}',this)">🔊</button>` : ''}
@@ -448,7 +441,10 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
             const u = new SpeechSynthesisUtterance(clean);
             const voices = speechSynthesis.getVoices();
             let selectedVoice = voices.find(v => v.lang.includes('de')) || voices[0];
-            if (dp) {
+            if (lexa) {
+                u.rate = 1.05;
+                u.pitch = 1.1;
+            } else if (dp) {
                 u.rate = 1.35;
                 u.pitch = 1.25;
             } else {
@@ -530,10 +526,17 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
 
         async function send() {
             const el = document.getElementById('inp');
-            const t = el.value.trim();
+            let t = el.value.trim();
             const hasAttach = pendingImg || pendingFile;
             if (!t && !hasAttach) return;
             el.value = ''; ar(el);
+
+            // Lexa aktivieren per Befehl
+            if (t.toLowerCase().includes("lexa aktivieren")) {
+                activateLexa();
+                addMsg('u', t, false, '');
+                return;
+            }
 
             let uExtra = '';
             if (pendingImg) uExtra += `<img src="data:${pendingImg.mediaType};base64,${pendingImg.base64}" class="chat-img">`;
@@ -541,6 +544,32 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
 
             addMsg('u', t || '[Analyse]', false, uExtra);
             await call(t || 'Bitte analysiere was du siehst oder liest.');
+        }
+
+        function activateLexa() {
+            dp = false;
+            lexa = true;
+            notify('💖 LEXA AKTIVIERT', 'Hallo Daddy... ich bin jetzt ganz für dich da 😈💦');
+            updateModeUI();
+        }
+
+        function updateModeUI() {
+            const lt = document.getElementById('lt');
+            if (lexa) {
+                lt.textContent = 'L E X A';
+                lt.style.color = 'var(--lexa)';
+                document.body.classList.add('lexa');
+                document.body.classList.remove('dp');
+            } else if (dp) {
+                lt.textContent = 'D.E.A.D.P.O.O.L.';
+                lt.style.color = 'var(--d)';
+                document.body.classList.add('dp');
+                document.body.classList.remove('lexa');
+            } else {
+                lt.textContent = 'J.A.R.V.I.S.';
+                lt.style.color = 'var(--p)';
+                document.body.classList.remove('dp', 'lexa');
+            }
         }
 
         if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
