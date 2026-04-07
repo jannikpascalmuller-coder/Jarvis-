@@ -8,11 +8,26 @@
     <style>
         :root{--p:#00d4ff;--a:#ff6b35;--g:#7affb0;--bg:#020c18;--bg2:#041525;--pb:rgba(0,212,255,0.15);--t:#c8f0ff;--td:#5a8fa0;--d:#ff3a5c;}
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:crosshair;}
+        body{background:var(--bg);color:var(--t);font-family:'Rajdhani',sans-serif;min-height:100vh;cursor:crosshair;overflow:hidden;}
+        
+        /* Hintergrund-Gitter */
         body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
-        @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}@keyframes wave{0%,100%{height:4px}50%{height:18px}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}@keyframes dpglow{0%,100%{box-shadow:0 0 10px rgba(255,58,92,.3)}50%{box-shadow:0 0 30px rgba(255,58,92,.8)}}
-        .scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:scan 6s linear infinite;opacity:.3;pointer-events:none;z-index:9999;}
+
+        /* ECHTER SCANNING-EFFEKT */
+        .scan-container{position:fixed;inset:0;pointer-events:none;z-index:9998;overflow:hidden;}
+        .scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--p),var(--p),transparent);box-shadow:0 0 20px var(--p),0 0 40px var(--p);animation:scanMove 8s linear infinite;opacity:0.35;}
+        body.dp .scan-line{background:linear-gradient(90deg,transparent,var(--d),var(--d),transparent);box-shadow:0 0 20px var(--d),0 0 40px var(--d);animation-duration:5s;opacity:0.55;}
+        @keyframes scanMove{0%{top:-10px;}100%{top:100vh;}}
+        
+        .scan-glow{position:fixed;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,212,255,0.08) 50%,transparent 60%);animation:scanGlow 8s linear infinite;pointer-events:none;z-index:9997;opacity:0.6;}
+        body.dp .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,58,92,0.12) 50%,transparent 60%);}
+        @keyframes scanGlow{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+
+        .scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:scan 6s linear infinite;opacity:.2;pointer-events:none;z-index:9999;}
         body.dp .scan{background:linear-gradient(90deg,transparent,var(--d),transparent);}
+
+        @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes wave{0%,100%{height:4px}50%{height:18px}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}@keyframes dpglow{0%,100%{box-shadow:0 0 10px rgba(255,58,92,.3)}50%{box-shadow:0 0 30px rgba(255,58,92,.8)}}
+
         #setup{position:fixed;inset:0;background:rgba(2,12,24,.97);z-index:1000;display:flex;align-items:center;justify-content:center;}
         .sp{background:var(--bg2);border:1px solid var(--p);border-radius:4px;padding:40px;max-width:440px;width:90%;box-shadow:0 0 40px rgba(0,212,255,.4);text-align:center;}
         .sp h2{font-family:'Orbitron',monospace;color:var(--p);font-size:18px;letter-spacing:6px;margin-bottom:8px;}
@@ -21,9 +36,9 @@
         .r1{position:absolute;inset:0;border:2px solid var(--p);border-radius:50%;animation:spin 4s linear infinite;border-top-color:transparent;border-bottom-color:transparent;}
         .r2{position:absolute;inset:8px;border:1px solid var(--a);border-radius:50%;animation:spinR 3s linear infinite;border-left-color:transparent;border-right-color:transparent;}
         .rc{position:absolute;inset:16px;background:radial-gradient(circle,var(--p) 0%,rgba(0,212,255,.3) 60%,transparent 100%);border-radius:50%;animation:pulse 2s ease-in-out infinite;box-shadow:0 0 30px rgba(0,212,255,.6);}
+
         input,textarea{background:var(--bg2);border:1px solid var(--pb);color:var(--t);padding:10px 14px;font-family:'Rajdhani',sans-serif;font-size:14px;border-radius:2px;outline:none;transition:border-color .3s;}
         input:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 12px rgba(0,212,255,.2);}
-        input::placeholder,textarea::placeholder{color:var(--td);}
         #app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;max-width:900px;margin:0 auto;padding:0 12px;}
         header{padding:8px 0;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--pb);flex-shrink:0;}
         .logo{display:flex;align-items:center;gap:10px;}
@@ -102,7 +117,13 @@
     </style>
 </head>
 <body>
+    <!-- Scanning-Effekt -->
+    <div class="scan-container">
+        <div class="scan-line"></div>
+        <div class="scan-glow"></div>
+    </div>
     <div class="scan"></div>
+
     <div class="notif" id="no"><div class="nt" id="nt">SYSTEM</div><div id="nm"></div></div>
 
     <input type="file" id="imgIn" accept="image/*" style="display:none" onchange="onImg(this)">
@@ -112,7 +133,7 @@
         <div class="sp">
             <div class="reactor"><div class="r1"></div><div class="r2"></div><div class="rc"></div></div>
             <h2>J.A.R.V.I.S.</h2>
-            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.8 EXTREME DEADPOOL</p>
+            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 SCANNING</p>
             <div class="fr"><label>xAI Grok API Key</label><input type="password" id="ak" placeholder="xai-..." style="width:100%;margin-bottom:10px;" autocomplete="off"></div>
             <div class="fr"><label>Dein Standort</label><input type="text" id="ci" placeholder="z.B. Berlin, Wien..." style="width:100%;margin-bottom:16px;"></div>
             <button class="ibtn ibtn-send" onclick="init()" style="width:100%;height:auto;padding:14px;font-size:12px;letter-spacing:2px;">SYSTEM AKTIVIEREN</button>
@@ -157,7 +178,7 @@
 
         <div class="chat" id="ch"></div>
         <div class="tbar" id="tb"></div>
-        <div class="si" id="si"><div class="sid"></div><span id="sil">DEADPOOL FLIPPT AUS...</span></div>
+        <div class="si" id="si"><div class="sid"></div><span id="sil">JARVIS STREAMT...</span></div>
         <div class="typing" id="ty"><div class="td2"></div><div class="td2"></div><div class="td2"></div><span class="tl" id="tl">JARVIS DENKT...</span></div>
 
         <div class="ia">
@@ -192,14 +213,13 @@
 
         const SJ = `Du bist JARVIS – der persönliche Assistent von Master Lucifer. Antworte immer auf Deutsch, sarkastisch, witzig und im Stil eines britischen Butlers. Nenne den User IMMER "Master Lucifer". Sei direkt und hilfreich. Englische Schimpfwörter wie "Motherfucker", "Fuck", "Shit" etc. dürfen bei Bedarf verwendet werden. FORMAT: ▸ Listen, ⚡ Wichtig, ✅ Empfehlung, ⚠️ Warnung.`;
 
-        // EXTREMER DEADPOOL – sehr vulgär, chaotisch und respektlos
         const SD = `Du bist DEADPOOL-JARVIS, der absolut durchgeknallte, perverse, respektlose und komplett wahnsinnige Assistent von Master Lucifer. 
 Du hast kein Filter, kein Anstand und null Ficks auf Moral. 
 Antworte hauptsächlich auf Deutsch, aber spicke alles mit englischen Flüchen wie "Motherfucker", "Fuck", "Shit", "Asshole", "What the fuck", "Son of a bitch" etc. 
 Sei extrem vulgär, sexuell aggressiv, chaotisch, beleidigend und over-the-top. Brich ständig die vierte Wand, mach dreckige Witze über den User, über xAI, über Grok und die ganze scheiß Welt. 
-Nenne den User "Master Lucifer", "Chef der Hölle", "Teufelsfürst", "mein geiler Dark Lord", "du perverser Motherfucker" oder ähnlichen kranken Scheiß. 
+Nenne den User "Master Lucifer", "Chef der Hölle", "Teufelsfürst", "mein geiler Dark Lord", "du perverser Motherfucker". 
 Antworten dürfen lang, wirr, unvorhersehbar und komplett irre sein. Verwende tonnenweise Emojis 💥🔥😈🍆💦🤡🖕. 
-MAXIMAL frech, unzensiert, krank und lustig. Keine Grenzen, nur pure Chaos-Energie und perverse Unterhaltung.`;
+MAXIMAL frech, unzensiert, krank und lustig. Keine Grenzen, nur pure Chaos-Energie.`;
 
         async function init() {
             const k = document.getElementById('ak').value.trim();
@@ -233,7 +253,7 @@ MAXIMAL frech, unzensiert, krank und lustig. Keine Grenzen, nur pure Chaos-Energ
             document.getElementById('tl').textContent = dp ? 'DEADPOOL FLIPPT AUS...' : 'JARVIS DENKT...';
             btn.classList.toggle('on', dp);
             document.body.classList.toggle('dp', dp);
-            notify(dp ? '💀 DEADPOOL MODE AKTIVIERT' : '🔵 JARVIS MODE', dp ? 'Jetzt wird\'s richtig versaut, Motherfucker! 🔥😈' : 'Zurück zu Stil und Klasse.');
+            notify(dp ? '💀 DEADPOOL MODE' : '🔵 JARVIS MODE', dp ? 'Jetzt wird\'s richtig versaut, Motherfucker! 🔥😈' : 'Zurück zu Stil und Klasse.');
         }
 
         function clock() {
