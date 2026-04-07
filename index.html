@@ -17,12 +17,12 @@
         @keyframes scanMove{0%{top:-10px;}100%{top:100vh;}}
         
         .scan-glow{position:fixed;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,212,255,0.08) 50%,transparent 60%);animation:scanGlow 8s linear infinite;pointer-events:none;z-index:9997;opacity:0.6;}
-        body.dp .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,58,92,0.12) 50%,transparent 60%);}
+        body.dp .scan-glow, body.lexa .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,58,92,0.12) 50%,transparent 60%);}
         body.lexa .scan-glow{background:linear-gradient(to bottom,transparent 40%,rgba(255,42,143,0.18) 50%,transparent 60%);}
         @keyframes scanGlow{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
 
         .scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);animation:scan 6s linear infinite;opacity:.2;pointer-events:none;z-index:9999;}
-        body.dp .scan{background:linear-gradient(90deg,transparent,var(--d),transparent);}
+        body.dp .scan, body.lexa .scan{background:linear-gradient(90deg,transparent,var(--d),transparent);}
         body.lexa .scan{background:linear-gradient(90deg,transparent,var(--lexa),transparent);}
 
         @keyframes spin{to{transform:rotate(360deg)}}@keyframes spinR{from{transform:rotate(360deg)}to{transform:rotate(0deg)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes wave{0%,100%{height:4px}50%{height:18px}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}@keyframes dpglow{0%,100%{box-shadow:0 0 10px rgba(255,58,92,.3)}50%{box-shadow:0 0 30px rgba(255,58,92,.8)}}
@@ -135,7 +135,7 @@
         <div class="sp">
             <div class="reactor"><div class="r1"></div><div class="r2"></div><div class="rc"></div></div>
             <h2>J.A.R.V.I.S.</h2>
-            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 LEXA MODE</p>
+            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.9 LEXA</p>
             <div class="fr"><label>xAI Grok API Key</label><input type="password" id="ak" placeholder="xai-..." style="width:100%;margin-bottom:10px;" autocomplete="off"></div>
             <div class="fr"><label>Dein Standort</label><input type="text" id="ci" placeholder="z.B. Berlin, Wien..." style="width:100%;margin-bottom:16px;"></div>
             <button class="ibtn ibtn-send" onclick="init()" style="width:100%;height:auto;padding:14px;font-size:12px;letter-spacing:2px;">SYSTEM AKTIVIEREN</button>
@@ -266,6 +266,12 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             greet();
         }
 
+        function toggleMods() {
+            modsOpen = !modsOpen;
+            document.getElementById('modList').classList.toggle('collapsed', !modsOpen);
+            document.getElementById('modToggleBtn').textContent = modsOpen ? '▲ EINKLAPPEN' : '▼ AUSKLAPPEN';
+        }
+
         function toggleDP() {
             lexa = false;
             dp = !dp;
@@ -298,6 +304,95 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
                 lt.style.color = 'var(--p)';
                 document.body.classList.remove('dp', 'lexa');
             }
+        }
+
+        function clock() {
+            function u() {
+                const n = new Date();
+                document.getElementById('clock').textContent = n.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+                document.getElementById('dt').textContent = n.toLocaleDateString('de-DE', {weekday:'short', day:'2-digit', month:'short', year:'numeric'}).toUpperCase();
+            }
+            u();
+            setInterval(u, 1000);
+        }
+
+        async function weather() {
+            try {
+                const r = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+                const d = await r.json();
+                const c = d.current_condition[0];
+                const t = d.weather[0];
+                const tm = d.weather[1];
+                const desc = c.lang_de?.[0]?.value || c.weatherDesc[0].value;
+                window._wd = {temp:c.temp_C, desc, max:t.maxtempC, min:t.mintempC, tmax:tm.maxtempC, tmin:tm.mintempC, hum:c.humidity, wind:c.windspeedKmph};
+                document.getElementById('wx').innerHTML = `🌡️ ${c.temp_C}°C · ${desc} · 💧${c.humidity}% · 💨${c.windspeedKmph}km/h · Heute: ${t.mintempC}–${t.maxtempC}° · Morgen: ${tm.mintempC}–${tm.maxtempC}°`;
+            } catch(e) {
+                document.getElementById('wx').textContent = 'Wetterdaten nicht verfügbar';
+            }
+        }
+
+        async function greet() {
+            const h = new Date().getHours();
+            const w = window._wd;
+            let p;
+            if (h >= 5 && h < 12) p = `Begrüße Master Lucifer zum Morgen (${h}:00). ${w ? `Wetter in ${city}: ${w.temp}°C, ${w.desc}. Heute ${w.min}–${w.max}°, Morgen ${w.tmin}–${w.tmax}°.`:''} Sarkastischer Morgengruß mit Wetter und einem Tipp für den Tag.`;
+            else if (h < 18) p = `Begrüße Master Lucifer am Nachmittag (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Kurze sarkastische Begrüßung.`;
+            else p = `Begrüße Master Lucifer am Abend (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Entspannten Abendgruß und frage, wie sein Tag war.`;
+            await call(p, true);
+        }
+
+        // ... (onImg, onFile, showAttachPreview, clearAttach bleiben unverändert)
+
+        function onImg(input) {
+            const file = input.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const b64 = e.target.result.split(',')[1];
+                const mt = file.type || 'image/jpeg';
+                pendingImg = {base64:b64, mediaType:mt, name:file.name};
+                showAttachPreview('img', file.name, e.target.result);
+                notify('📷 BILD', 'Bereit: '+file.name);
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function onFile(input) {
+            const file = input.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e){
+                let text = e.target.result;
+                if(text.length > 80000) text = text.substring(0,80000)+'...[GEKÜRZT]';
+                pendingFile = {text, name:file.name};
+                showAttachPreview('file', file.name, null);
+                notify('📎 DATEI', 'Bereit: '+file.name);
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        function showAttachPreview(type, name, imgSrc) {
+            const row = document.getElementById('attachRow');
+            row.style.display = 'flex';
+            const id = 'prev_' + type;
+            if(document.getElementById(id)) document.getElementById(id).remove();
+            const div = document.createElement('div');
+            div.className = 'preview-box';
+            div.id = id;
+            if(type==='img' && imgSrc){
+                div.innerHTML = `<img src="${imgSrc}" alt="preview"><span>${name}</span><button class="rm" onclick="clearAttach('img')">✕</button>`;
+            } else {
+                div.innerHTML = `<span>📄</span><span>${name}</span><button class="rm" onclick="clearAttach('file')">✕</button>`;
+            }
+            row.appendChild(div);
+        }
+
+        function clearAttach(type) {
+            if(type==='img') pendingImg=null; else pendingFile=null;
+            const el = document.getElementById('prev_'+type);
+            if(el) el.remove();
+            const row = document.getElementById('attachRow');
+            if(!row.children.length) row.style.display='none';
         }
 
         async function call(msg, sys = false) {
@@ -531,7 +626,6 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             if (!t && !hasAttach) return;
             el.value = ''; ar(el);
 
-            // Lexa aktivieren per Befehl
             if (t.toLowerCase().includes("lexa aktivieren")) {
                 activateLexa();
                 addMsg('u', t, false, '');
