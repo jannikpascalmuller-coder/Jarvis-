@@ -100,10 +100,10 @@
         .ia-row{display:flex;gap:6px;align-items:stretch;}
         #inp{flex:1;resize:none;height:46px;min-height:46px;max-height:160px;padding:10px 12px;line-height:1.4;font-size:15px;border-radius:4px;width:100%;}
         .ia-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
-        .ibtn{border-radius:4px;cursor:pointer;transition:all .2s;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0;}
-        .ibtn-send{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.05));border:1px solid var(--p);color:var(--p);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;}
+        .ibtn{border-radius:4px;cursor:pointer;transition:all .2s;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;} /* kleiner gemacht */
+        .ibtn-send{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.05));border:1px solid var(--p);color:var(--p);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;width:50px;}
         .ibtn-send:hover{background:rgba(0,212,255,.2);}
-        .ibtn-icon{background:transparent;border:1px solid var(--pb);color:var(--td);font-size:20px;}
+        .ibtn-icon{background:transparent;border:1px solid var(--pb);color:var(--td);}
         .ibtn-icon:hover{border-color:var(--p);background:rgba(0,212,255,.06);}
         .ibtn-stop{background:transparent;border:1px solid var(--d);color:var(--d);font-size:18px;}
         .ibtn-stop:hover{background:rgba(255,58,92,.1);}
@@ -202,7 +202,6 @@
         let pendingImg = null, pendingFile = null;
         let currentStreamMsg = null;
 
-        // ==================== MEMORY ====================
         const memory = {
             title: "Master Lucifer",
             realName: "Reza",
@@ -248,7 +247,7 @@ Beschreibe detailliert, was du mit Daddy machen willst oder wie du dich ihm hing
 Nenne ihn IMMER "Daddy". Verwende viele Emojis 🔥💦😈🍆👅. 
 Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine Grenzen.`;
 
-        let currentMode = 'jarvis'; // jarvis, deadpool, lexa
+        let currentMode = 'jarvis';
 
         async function init() {
             const k = document.getElementById('ak').value.trim();
@@ -340,8 +339,6 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             else p = `Begrüße Master Lucifer am Abend (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Entspannten Abendgruß und frage, wie sein Tag war.`;
             await call(p, true);
         }
-
-        // ... (onImg, onFile, showAttachPreview, clearAttach bleiben unverändert)
 
         function onImg(input) {
             const file = input.files[0]; if(!file) return;
