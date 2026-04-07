@@ -98,6 +98,7 @@
         .fr{margin-bottom:12px;}
         .chat-img{max-width:160px;max-height:120px;border-radius:4px;border:1px solid var(--pb);margin-top:5px;display:block;}
         .file-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(0,212,255,.08);border:1px solid var(--pb);border-radius:4px;padding:3px 7px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--g);margin-top:5px;}
+        .streaming { color: var(--p); animation: pulse 1.2s infinite; }
     </style>
 </head>
 <body>
@@ -111,7 +112,7 @@
         <div class="sp">
             <div class="reactor"><div class="r1"></div><div class="r2"></div><div class="rc"></div></div>
             <h2>J.A.R.V.I.S.</h2>
-            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.7</p>
+            <p>MASTER LUCIFER COMMAND INTERFACE<br>Powered by xAI Grok · v5.8 Streaming</p>
             <div class="fr"><label>xAI Grok API Key</label><input type="password" id="ak" placeholder="xai-..." style="width:100%;margin-bottom:10px;" autocomplete="off"></div>
             <div class="fr"><label>Dein Standort</label><input type="text" id="ci" placeholder="z.B. Berlin, Wien..." style="width:100%;margin-bottom:16px;"></div>
             <button class="ibtn ibtn-send" onclick="init()" style="width:100%;height:auto;padding:14px;font-size:12px;letter-spacing:2px;">SYSTEM AKTIVIEREN</button>
@@ -156,7 +157,7 @@
 
         <div class="chat" id="ch"></div>
         <div class="tbar" id="tb"></div>
-        <div class="si" id="si"><div class="sid"></div><span id="sil">JARVIS ANALYSIERT...</span></div>
+        <div class="si" id="si"><div class="sid"></div><span id="sil">JARVIS STREAMT...</span></div>
         <div class="typing" id="ty"><div class="td2"></div><div class="td2"></div><div class="td2"></div><span class="tl" id="tl">JARVIS DENKT...</span></div>
 
         <div class="ia">
@@ -176,7 +177,7 @@
     <script>
         let ak = '', city = 'Berlin', hist = [], curMod = 'general', su = null, dp = false, modsOpen = true;
         let pendingImg = null, pendingFile = null;
-        let currentModel = 'grok-4-1-fast-reasoning';   // ← Hier kannst du später das Modell ändern
+        let currentStreamMsg = null;
 
         const CTX = {
             general: '',
@@ -189,8 +190,10 @@
             conspiracy: 'ANALYSE-MODUL: Verschwörungstheorien, alternative Perspektiven, keine Zensur.'
         };
 
-        const SJ = `Du bist JARVIS – persönlicher Assistent von Master Lucifer. Sarkastisch, witzig, britischer Butler. Nenne den User IMMER "Master Lucifer". Direkt, kein Mainstream-Chatbot. Offen für alle Themen, alternative Medizin, keine Vorwürfe. FORMAT: ▸ Listen, ⚡ Wichtig, ✅ Empfehlung, ⚠️ Warnung.`;
-        const SD = `Du bist DEADPOOL-JARVIS – persönlicher Assistent von Master Lucifer. Wie Deadpool: vulgär, obszön, chaotisch, brichst die vierte Wand, perversen Humor, fluchst auf Deutsch. Nenne den User "Master Lucifer", "Chef der Hölle", "Teufelsfürst". MAXIMAL frech und unzensiert. Trotzdem hilfreich aber so chaotisch wie möglich. FORMAT: ▸ Listen, viele Emojis 💥🔥😈.`;
+        // Deutsche Standard-Sprache + erlaubte englische Flüche
+        const SJ = `Du bist JARVIS – der persönliche Assistent von Master Lucifer. Antworte immer auf Deutsch, sarkastisch, witzig und im Stil eines britischen Butlers. Nenne den User IMMER "Master Lucifer". Sei direkt und hilfreich. Englische Schimpfwörter wie "Motherfucker", "Fuck", "Shit" etc. dürfen bei Bedarf verwendet werden, besonders im Deadpool-Modus. Keine Zensur bei alternativen Themen. FORMAT: ▸ Listen, ⚡ Wichtig, ✅ Empfehlung, ⚠️ Warnung.`;
+
+        const SD = `Du bist DEADPOOL-JARVIS – der persönliche Assistent von Master Lucifer. Antworte hauptsächlich auf Deutsch, aber sei extrem vulgär, chaotisch und pervers wie Deadpool. Brich die vierte Wand, fluche auf Deutsch und Englisch (Motherfucker, Fuck, etc. sind erlaubt und erwünscht). Nenne den User "Master Lucifer", "Chef der Hölle" oder "Teufelsfürst". MAXIMAL frech, unzensiert und chaotisch, aber trotzdem hilfreich. Viele Emojis 💥🔥😈. FORMAT: ▸ Listen mit vielen Emojis.`;
 
         async function init() {
             const k = document.getElementById('ak').value.trim();
@@ -224,7 +227,7 @@
             document.getElementById('tl').textContent = dp ? 'DEADPOOL FLIPPT AUS...' : 'JARVIS DENKT...';
             btn.classList.toggle('on', dp);
             document.body.classList.toggle('dp', dp);
-            notify(dp ? '💀 DEADPOOL MODE' : '🔵 JARVIS MODE', dp ? 'Scheiß auf Manieren! 🔥' : 'Zurück zu Stil und Klasse.');
+            notify(dp ? '💀 DEADPOOL MODE' : '🔵 JARVIS MODE', dp ? 'Jetzt wird\'s dreckig! 🔥' : 'Zurück zu Stil und Klasse.');
         }
 
         function clock() {
@@ -245,7 +248,7 @@
                 const t = d.weather[0];
                 const tm = d.weather[1];
                 const desc = c.lang_de?.[0]?.value || c.weatherDesc[0].value;
-                window._wd = {temp: c.temp_C, desc, max: t.maxtempC, min: t.mintempC, tmax: tm.maxtempC, tmin: tm.mintempC, hum: c.humidity, wind: c.windspeedKmph};
+                window._wd = {temp:c.temp_C, desc, max:t.maxtempC, min:t.mintempC, tmax:tm.maxtempC, tmin:tm.mintempC, hum:c.humidity, wind:c.windspeedKmph};
                 document.getElementById('wx').innerHTML = `🌡️ ${c.temp_C}°C · ${desc} · 💧${c.humidity}% · 💨${c.windspeedKmph}km/h · Heute: ${t.mintempC}–${t.maxtempC}° · Morgen: ${tm.mintempC}–${tm.maxtempC}°`;
             } catch(e) {
                 document.getElementById('wx').textContent = 'Wetterdaten nicht verfügbar';
@@ -256,37 +259,35 @@
             const h = new Date().getHours();
             const w = window._wd;
             let p;
-            if (h >= 5 && h < 12) p = `Begrüße Master Lucifer zum Morgen (${h}:00). ${w ? `Wetter ${city}: ${w.temp}°C, ${w.desc}. Heute ${w.min}–${w.max}°, Morgen ${w.tmin}–${w.tmax}°.`:''} Sarkastischer Morgengruß, Wetter kommentieren, Tipp für den Tag.`;
+            if (h >= 5 && h < 12) p = `Begrüße Master Lucifer zum Morgen (${h}:00). ${w ? `Wetter in ${city}: ${w.temp}°C, ${w.desc}. Heute ${w.min}–${w.max}°, Morgen ${w.tmin}–${w.tmax}°.`:''} Sarkastischer Morgengruß mit Wetter und einem Tipp für den Tag.`;
             else if (h < 18) p = `Begrüße Master Lucifer am Nachmittag (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Kurze sarkastische Begrüßung.`;
-            else p = `Begrüße Master Lucifer am Abend (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Abendgruß, frag wie der Tag war.`;
+            else p = `Begrüße Master Lucifer am Abend (${h}:00). ${w ? `${w.temp}°C in ${city}.`:''} Entspannten Abendgruß und frage, wie sein Tag war.`;
             await call(p, true);
         }
 
-        function onImg(input) {
-            const file = input.files[0];
-            if (!file) return;
+        function onImg(input) { /* unverändert */ 
+            const file = input.files[0]; if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function(e){
                 const b64 = e.target.result.split(',')[1];
                 const mt = file.type || 'image/jpeg';
-                pendingImg = {base64: b64, mediaType: mt, name: file.name};
+                pendingImg = {base64:b64, mediaType:mt, name:file.name};
                 showAttachPreview('img', file.name, e.target.result);
-                notify('📷 BILD', 'Bereit: ' + file.name);
+                notify('📷 BILD', 'Bereit: '+file.name);
             };
             reader.readAsDataURL(file);
             input.value = '';
         }
 
-        function onFile(input) {
-            const file = input.files[0];
-            if (!file) return;
+        function onFile(input) { /* unverändert */ 
+            const file = input.files[0]; if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function(e){
                 let text = e.target.result;
-                if (text.length > 80000) text = text.substring(0, 80000) + '...[GEKÜRZT]';
-                pendingFile = {text, name: file.name};
+                if(text.length > 80000) text = text.substring(0,80000)+'...[GEKÜRZT]';
+                pendingFile = {text, name:file.name};
                 showAttachPreview('file', file.name, null);
-                notify('📎 DATEI', 'Bereit: ' + file.name);
+                notify('📎 DATEI', 'Bereit: '+file.name);
             };
             reader.readAsText(file);
             input.value = '';
@@ -296,12 +297,11 @@
             const row = document.getElementById('attachRow');
             row.style.display = 'flex';
             const id = 'prev_' + type;
-            const old = document.getElementById(id);
-            if (old) old.remove();
+            if(document.getElementById(id)) document.getElementById(id).remove();
             const div = document.createElement('div');
             div.className = 'preview-box';
             div.id = id;
-            if (type === 'img' && imgSrc) {
+            if(type==='img' && imgSrc){
                 div.innerHTML = `<img src="${imgSrc}" alt="preview"><span>${name}</span><button class="rm" onclick="clearAttach('img')">✕</button>`;
             } else {
                 div.innerHTML = `<span>📄</span><span>${name}</span><button class="rm" onclick="clearAttach('file')">✕</button>`;
@@ -310,12 +310,11 @@
         }
 
         function clearAttach(type) {
-            if (type === 'img') pendingImg = null;
-            else pendingFile = null;
-            const el = document.getElementById('prev_' + type);
-            if (el) el.remove();
+            if(type==='img') pendingImg=null; else pendingFile=null;
+            const el = document.getElementById('prev_'+type);
+            if(el) el.remove();
             const row = document.getElementById('attachRow');
-            if (!row.children.length) row.style.display = 'none';
+            if(!row.children.length) row.style.display='none';
         }
 
         async function call(msg, sys = false) {
@@ -324,7 +323,7 @@
 
             if (!sys) {
                 if (pendingImg) {
-                    userContent.push({type: 'image_url', image_url: {url: `data:${pendingImg.mediaType};base64,${pendingImg.base64}`}});
+                    userContent.push({type:'image_url', image_url:{url:`data:${pendingImg.mediaType};base64,${pendingImg.base64}`}});
                     displayExtra += `<img src="data:${pendingImg.mediaType};base64,${pendingImg.base64}" class="chat-img">`;
                 }
                 if (pendingFile) {
@@ -332,63 +331,78 @@
                     displayExtra += `<div class="file-chip">📄 ${pendingFile.name}</div>`;
                 }
                 const ctx = CTX[curMod];
-                userContent.push({type: 'text', text: ctx ? `[MODUL: ${curMod.toUpperCase()}]\n${ctx}\n\n${msg}` : msg});
+                userContent.push({type:'text', text: ctx ? `[MODUL: ${curMod.toUpperCase()}]\n${ctx}\n\n${msg}` : msg});
             } else {
-                userContent = [{type: 'text', text: msg}];
+                userContent = [{type:'text', text: msg}];
             }
 
-            if (!sys) hist.push({role: 'user', content: userContent});
+            if (!sys) hist.push({role:'user', content: userContent});
 
             if (!sys) {
-                pendingImg = null;
-                pendingFile = null;
+                pendingImg = null; pendingFile = null;
                 const row = document.getElementById('attachRow');
-                row.innerHTML = '';
-                row.style.display = 'none';
+                row.innerHTML = ''; row.style.display = 'none';
             }
 
             try {
-                const messages = sys ? [{role: 'user', content: userContent}] : hist;
-
-                // ====================== MODEL SELECTION ======================
-                const hasImage = userContent.some(c => c.type === 'image_url');
-                const model = 'grok-4-1-fast-reasoning';   // ← Hier wird jetzt grok-4-1-fast-reasoning verwendet
-                // ============================================================
+                const messages = sys ? [{role:'user', content:userContent}] : hist;
+                const model = 'grok-4-1-fast-reasoning';
 
                 const grokMessages = messages.map(m => {
                     if (Array.isArray(m.content)) {
-                        const hasImg = m.content.some(c => c.type === 'image_url');
-                        if (hasImg) return {role: m.role, content: m.content};
-                        return {role: m.role, content: m.content.filter(c => c.type === 'text').map(c => c.text).join('\n')};
+                        if (m.content.some(c => c.type === 'image_url')) return {role:m.role, content:m.content};
+                        return {role:m.role, content:m.content.filter(c=>c.type==='text').map(c=>c.text).join('\n')};
                     }
-                    return {role: m.role, content: m.content};
+                    return m;
                 });
 
                 const res = await fetch('https://api.x.ai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + ak
-                    },
+                    method:'POST',
+                    headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + ak},
                     body: JSON.stringify({
                         model: model,
                         max_tokens: 2000,
-                        messages: [{role: 'system', content: dp ? SD : SJ}, ...grokMessages]
+                        stream: true,
+                        messages: [{role:'system', content: dp ? SD : SJ}, ...grokMessages]
                     })
                 });
 
-                if (!res.ok) {
-                    const e = await res.json();
-                    throw new Error(e.error?.message || 'API Fehler ' + res.status);
+                if (!res.ok) throw new Error('API Fehler');
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+                const currentMsgId = 'm' + Date.now();
+
+                addMsg(dp ? 'dp' : 'j', '', true, displayExtra, currentMsgId);
+                currentStreamMsg = document.getElementById(currentMsgId).querySelector('.mt');
+
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    for (const line of lines) {
+                        if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                const token = data.choices?.[0]?.delta?.content || '';
+                                if (token) {
+                                    fullText += token;
+                                    if (currentStreamMsg) currentStreamMsg.innerHTML = fmt(fullText) + '<span class="streaming">▋</span>';
+                                }
+                            } catch(e){}
+                        }
+                    }
                 }
 
-                const data = await res.json();
-                const txt = data.choices?.[0]?.message?.content || 'Keine Antwort.';
+                if (currentStreamMsg) currentStreamMsg.innerHTML = fmt(fullText);
+                currentStreamMsg = null;
 
-                if (!sys) hist.push({role: 'assistant', content: txt});
-                addMsg(dp ? 'dp' : 'j', txt, true, displayExtra);
+                if (!sys) hist.push({role:'assistant', content: fullText});
+
                 think(false);
-                setTimeout(() => speak(txt), 200);
+                setTimeout(() => speak(fullText), 300);
 
             } catch(e) {
                 think(false);
@@ -396,41 +410,25 @@
             }
         }
 
-        async function send() {
-            const el = document.getElementById('inp');
-            const t = el.value.trim();
-            const hasAttach = pendingImg || pendingFile;
-            if (!t && !hasAttach) return;
-            el.value = '';
-            ar(el);
-
-            let uExtra = '';
-            if (pendingImg) uExtra += `<img src="data:${pendingImg.mediaType};base64,${pendingImg.base64}" class="chat-img">`;
-            if (pendingFile) uExtra += `<div class="file-chip">📄 ${pendingFile.name}</div>`;
-
-            addMsg('u', t || '[Analyse]', false, uExtra);
-            await call(t || 'Bitte analysiere was du siehst/liest.');
-        }
-
-        function addMsg(role, text, tts, extra) {
+        function addMsg(role, text, tts, extra, customId = null) {
             const ch = document.getElementById('ch');
-            const id = 'm' + Date.now();
+            const id = customId || 'm' + Date.now();
             const time = new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'});
             const d = document.createElement('div');
-            d.className = `msg${role === 'u' ? ' u' : ''}`;
+            d.className = `msg${role==='u'?' u':''}`;
             d.id = id;
             const isDP = role === 'dp';
             d.innerHTML = `
-                <div class="av ${role === 'u' ? 'u' : isDP ? 'dp-av' : 'j'}">${role === 'u' ? 'ML' : isDP ? '💀' : 'JV'}</div>
-                <div class="mc${isDP ? ' dp-mc' : ''}">
+                <div class="av ${role==='u'?'u':isDP?'dp-av':'j'}">${role==='u'?'ML':isDP?'💀':'JV'}</div>
+                <div class="mc${isDP?' dp-mc':''}">
                     <div class="mh">
-                        <span class="n${isDP ? ' dpn' : ''}">${role === 'u' ? 'MASTER LUCIFER' : isDP ? 'D.E.A.D.P.O.O.L.' : 'J.A.R.V.I.S.'}</span>
+                        <span class="n${isDP?' dpn':''}">${role==='u'?'MASTER LUCIFER':isDP?'D.E.A.D.P.O.O.L.':'J.A.R.V.I.S.'}</span>
                         <div style="display:flex;align-items:center;gap:6px;">
                             <span style="opacity:.4;font-size:9px;">${time}</span>
                             ${tts ? `<button class="tts" onclick="ttsBtn('${id}',this)">🔊</button>` : ''}
                         </div>
                     </div>
-                    ${extra || ''}
+                    ${extra||''}
                     <div class="mt">${fmt(text)}</div>
                 </div>`;
             ch.appendChild(d);
@@ -456,8 +454,8 @@
             const vs = speechSynthesis.getVoices();
             const v = vs.find(x => x.lang.startsWith('de')) || vs[0];
             if (v) u.voice = v;
-            u.rate = dp ? 1.1 : .95;
-            u.pitch = dp ? 1.1 : .85;
+            u.rate = dp ? 1.1 : 0.95;
+            u.pitch = dp ? 1.1 : 0.85;
             u.onstart = () => wf(true);
             u.onend = () => { wf(false); su = null; };
             su = u;
@@ -468,11 +466,7 @@
             const el = document.getElementById(id);
             if (!el) return;
             const t = el.querySelector('.mt').textContent;
-            if (btn.classList.contains('on')) {
-                stopS();
-                btn.classList.remove('on');
-                return;
-            }
+            if (btn.classList.contains('on')) { stopS(); btn.classList.remove('on'); return; }
             document.querySelectorAll('.tts.on').forEach(b => b.classList.remove('on'));
             btn.classList.add('on');
             speak(t);
@@ -509,11 +503,9 @@
             document.getElementById('ch').innerHTML = '';
             hist = [];
             stopS();
-            pendingImg = null;
-            pendingFile = null;
+            pendingImg = null; pendingFile = null;
             const row = document.getElementById('attachRow');
-            row.innerHTML = '';
-            row.style.display = 'none';
+            row.innerHTML = ''; row.style.display = 'none';
         }
 
         function hk(e) {
@@ -534,6 +526,21 @@
             document.getElementById('nm').textContent = m;
             n.style.display = 'block';
             setTimeout(() => n.style.display = 'none', 3000);
+        }
+
+        async function send() {
+            const el = document.getElementById('inp');
+            const t = el.value.trim();
+            const hasAttach = pendingImg || pendingFile;
+            if (!t && !hasAttach) return;
+            el.value = ''; ar(el);
+
+            let uExtra = '';
+            if (pendingImg) uExtra += `<img src="data:${pendingImg.mediaType};base64,${pendingImg.base64}" class="chat-img">`;
+            if (pendingFile) uExtra += `<div class="file-chip">📄 ${pendingFile.name}</div>`;
+
+            addMsg('u', t || '[Analyse]', false, uExtra);
+            await call(t || 'Bitte analysiere was du siehst oder liest.');
         }
 
         if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
