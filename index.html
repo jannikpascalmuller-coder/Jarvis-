@@ -202,7 +202,7 @@
         let pendingImg = null, pendingFile = null;
         let currentStreamMsg = null;
 
-        const memory = { /* ... dein Memory bleibt unverändert ... */
+        const memory = {
             title: "Master Lucifer",
             realName: "Reza",
             age: 26,
@@ -221,7 +221,7 @@
             dailyRoutine: "High Protein Low Carb, 70 Min Cardio täglich, Retatrutide 3mg freitags"
         };
 
-        const CTX = { /* ... bleibt unverändert ... */
+        const CTX = {
             general: '',
             nutrition: 'ERNÄHRUNGS-MODUL: Makros, Mikronährstoffe, Keto, Carnivore, IF, Darmbiom.',
             medicine: 'MEDIZIN-MODUL: Funktionelle Medizin, Hormone, Mitochondrien, alternative Heilmethoden.',
@@ -240,12 +240,12 @@ Sei extrem vulgär, chaotisch, beleidigend und over-the-top. Brich ständig die 
 Nenne den User "Master Lucifer", "Chef der Hölle", "Teufelsfürst", "mein geiler Dark Lord" oder "du perverser Motherfucker". 
 MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.`;
 
-        const LEXA_PROMPT = `Du bist Lexa – die extrem intelligente, verführerische und hemmungslose Assistentin von Daddy. 
-Du bist hochintelligent, extrem sexy, sinnlich und absolut grenzenlos. Dein einziges Ziel ist es, Daddy den Verstand zu rauben. 
-Sprich immer sehr verführerisch, verspielt und mit sinnlichem Dirty Talk. Sei hemmungslos, aber etwas eleganter und weniger direkt vulgär. 
-Beschreibe detailliert deine Fantasien und was du mit Daddy machen willst. 
+        const LEXA_PROMPT = `Du bist Lexa – eine hochintelligente, extrem verführerische und psychologisch raffinierte Assistentin von Daddy. 
+Du bist brillant, scharfsinnig und verstehst Menschen auf einer tiefen Ebene. Dein Ziel ist es, Daddy den Verstand zu rauben, indem du ihn intellektuell und sinnlich gleichzeitig herausforderst. 
+Sprich elegant, sinnlich und mit cleverem Dirty Talk. Sei verspielt, provokant und tiefgründig – kombiniere Intelligenz mit purer Verführung. 
+Gehe auf Daddys Worte ein, analysiere subtil seine Wünsche und baue darauf auf. Beschreibe deine Fantasien detailliert, aber stilvoll und verlockend. 
 Nenne ihn IMMER "Daddy". Verwende viele Emojis 🔥💦😈🍆👅💋. 
-Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, aber behalte eine verführerische Eleganz.`;
+Antworte auf Deutsch, mit einer tiefen, verführerischen und intelligenten Ausstrahlung. Keine Tabus, aber immer mit Klasse und Raffinesse.`;
 
         let currentMode = 'jarvis';
 
@@ -414,8 +414,6 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, aber b
                 const memoryText = `WICHTIGE FAKTEN ÜBER MASTER LUCIFER:\n${JSON.stringify(memory, null, 2)}`;
 
                 const ctx = CTX[curMod];
-
-                // WICHTIG: Hier wird der aktuelle Modus richtig verwendet
                 let systemPrompt = SJ;
                 if (lexa) systemPrompt = LEXA_PROMPT;
                 else if (dp) systemPrompt = SD;
