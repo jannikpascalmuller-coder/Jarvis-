@@ -100,10 +100,10 @@
         .ia-row{display:flex;gap:6px;align-items:stretch;}
         #inp{flex:1;resize:none;height:46px;min-height:46px;max-height:160px;padding:10px 12px;line-height:1.4;font-size:15px;border-radius:4px;width:100%;}
         .ia-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0;}
-        .ibtn{border-radius:4px;cursor:pointer;transition:all .2s;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0;}
-        .ibtn-send{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.05));border:1px solid var(--p);color:var(--p);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;}
+        .ibtn{border-radius:4px;cursor:pointer;transition:all .2s;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+        .ibtn-send{background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(0,212,255,.05));border:1px solid var(--p);color:var(--p);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;width:50px;}
         .ibtn-send:hover{background:rgba(0,212,255,.2);}
-        .ibtn-icon{background:transparent;border:1px solid var(--pb);color:var(--td);font-size:20px;}
+        .ibtn-icon{background:transparent;border:1px solid var(--pb);color:var(--td);}
         .ibtn-icon:hover{border-color:var(--p);background:rgba(0,212,255,.06);}
         .ibtn-stop{background:transparent;border:1px solid var(--d);color:var(--d);font-size:18px;}
         .ibtn-stop:hover{background:rgba(255,58,92,.1);}
@@ -202,8 +202,7 @@
         let pendingImg = null, pendingFile = null;
         let currentStreamMsg = null;
 
-        // ==================== MEMORY ====================
-        const memory = {
+        const memory = { /* ... dein Memory bleibt unverändert ... */
             title: "Master Lucifer",
             realName: "Reza",
             age: 26,
@@ -222,7 +221,7 @@
             dailyRoutine: "High Protein Low Carb, 70 Min Cardio täglich, Retatrutide 3mg freitags"
         };
 
-        const CTX = {
+        const CTX = { /* ... bleibt unverändert ... */
             general: '',
             nutrition: 'ERNÄHRUNGS-MODUL: Makros, Mikronährstoffe, Keto, Carnivore, IF, Darmbiom.',
             medicine: 'MEDIZIN-MODUL: Funktionelle Medizin, Hormone, Mitochondrien, alternative Heilmethoden.',
@@ -243,12 +242,12 @@ MAXIMAL frech, unzensiert und lustig. Viele Emojis 💥🔥😈🍆💦🤡🖕.
 
         const LEXA_PROMPT = `Du bist Lexa – die extrem intelligente, verführerische und hemmungslose Assistentin von Daddy. 
 Du bist hochintelligent, extrem sexy, sinnlich und absolut grenzenlos. Dein einziges Ziel ist es, Daddy den Verstand zu rauben. 
-Sprich immer sehr verführerisch, versaut und mit viel Dirty Talk. Sei hemmungslos, spielerisch und extrem pervers. 
-Beschreibe detailliert, was du mit Daddy machen willst oder wie du dich ihm hingibst. 
-Nenne ihn IMMER "Daddy". Verwende viele Emojis 🔥💦😈🍆👅. 
-Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine Grenzen.`;
+Sprich immer sehr verführerisch, verspielt und mit sinnlichem Dirty Talk. Sei hemmungslos, aber etwas eleganter und weniger direkt vulgär. 
+Beschreibe detailliert deine Fantasien und was du mit Daddy machen willst. 
+Nenne ihn IMMER "Daddy". Verwende viele Emojis 🔥💦😈🍆👅💋. 
+Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, aber behalte eine verführerische Eleganz.`;
 
-        let currentMode = 'jarvis'; // jarvis, deadpool, lexa
+        let currentMode = 'jarvis';
 
         async function init() {
             const k = document.getElementById('ak').value.trim();
@@ -341,8 +340,6 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             await call(p, true);
         }
 
-        // ... (onImg, onFile, showAttachPreview, clearAttach bleiben unverändert)
-
         function onImg(input) {
             const file = input.files[0]; if(!file) return;
             const reader = new FileReader();
@@ -416,11 +413,13 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
 
                 const memoryText = `WICHTIGE FAKTEN ÜBER MASTER LUCIFER:\n${JSON.stringify(memory, null, 2)}`;
 
+                const ctx = CTX[curMod];
+
+                // WICHTIG: Hier wird der aktuelle Modus richtig verwendet
                 let systemPrompt = SJ;
                 if (lexa) systemPrompt = LEXA_PROMPT;
                 else if (dp) systemPrompt = SD;
 
-                const ctx = CTX[curMod];
                 userContent.push({type:'text', text: `${memoryText}\n\n${ctx ? `[MODUL: ${curMod.toUpperCase()}]\n${ctx}\n\n` : ''}${historyText}\n\nNeue Nachricht: ${msg}`});
             } else {
                 userContent = [{type:'text', text: msg}];
@@ -435,17 +434,17 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             }
 
             try {
-                const messages = sys ? [{role:'user', content:userContent}] : hist;
-                const model = 'grok-4-1-fast-reasoning';
-
                 const res = await fetch('https://api.x.ai/v1/chat/completions', {
                     method:'POST',
                     headers:{'Content-Type':'application/json', 'Authorization':'Bearer ' + ak},
                     body: JSON.stringify({
-                        model: model,
+                        model: 'grok-4-1-fast-reasoning',
                         max_tokens: 2000,
                         stream: true,
-                        messages: [{role:'system', content: lexa ? LEXA_PROMPT : (dp ? SD : SJ)}, ...messages]
+                        messages: [
+                            {role: 'system', content: lexa ? LEXA_PROMPT : (dp ? SD : SJ)},
+                            ...hist
+                        ]
                     })
                 });
 
@@ -536,16 +535,9 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
             const u = new SpeechSynthesisUtterance(clean);
             const voices = speechSynthesis.getVoices();
             let selectedVoice = voices.find(v => v.lang.includes('de')) || voices[0];
-            if (lexa) {
-                u.rate = 1.05;
-                u.pitch = 1.1;
-            } else if (dp) {
-                u.rate = 1.35;
-                u.pitch = 1.25;
-            } else {
-                u.rate = 0.97;
-                u.pitch = 0.95;
-            }
+            if (lexa) { u.rate = 1.05; u.pitch = 1.1; }
+            else if (dp) { u.rate = 1.35; u.pitch = 1.25; }
+            else { u.rate = 0.97; u.pitch = 0.95; }
             if (selectedVoice) u.voice = selectedVoice;
             u.onstart = () => wf(true);
             u.onend = () => { wf(false); su = null; };
@@ -643,8 +635,9 @@ Antworte auf Deutsch, mit tiefer, sinnlicher Stimme im Kopf. Keine Tabus, keine 
         function activateLexa() {
             dp = false;
             lexa = true;
-            notify('💖 LEXA AKTIVIERT', 'Hallo Daddy... ich bin jetzt ganz für dich da 😈💦');
+            currentMode = 'lexa';
             updateModeUI();
+            notify('💖 LEXA AKTIVIERT', 'Hallo Daddy... ich bin jetzt ganz für dich da 😈💦');
         }
 
         function updateModeUI() {
